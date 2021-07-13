@@ -30,6 +30,9 @@ password_field = driver.find_element_by_id("pass")
 password_field.send_keys(USER_PASSWORD)
 driver.find_element_by_id("loginbutton").click()
 
+# Wait for 3 seconds for login
+time.sleep(3)
+
 # View reading list
 print('navigating to: ' + READING_LIST_URL)
 driver.get(READING_LIST_URL)
