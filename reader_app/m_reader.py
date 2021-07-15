@@ -1,4 +1,5 @@
 from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 from webdriver_manager.chrome import ChromeDriverManager
 import time
@@ -37,15 +38,21 @@ time.sleep(3)
 print('navigating to: ' + READING_LIST_URL)
 driver.get(READING_LIST_URL)
 
-# Wait for 3 seconds
-time.sleep(3)
+# Wait for 5 seconds
+time.sleep(5)
 
 # Close the pop-up
-driver.find_element_by_xpath('//button[contains(text(),"Got it")]').click()
+try:
+    got_it_button = driver.find_element_by_xpath('//button[contains(text(),"Got it")]')
+    if got_it_button:
+        got_it_button.click()
+        time.sleep(3)
+except NoSuchElementException:
+    print('Got it button is not found.')
 
 # Get all saved articles
 elements = driver.find_elements_by_xpath("//a[descendant::h2]")
-
+print(len(elements), ' link(s) found.')
 links = []
 for i in range(len(elements)):
     links.append(elements[i].get_attribute('href'))
@@ -54,9 +61,18 @@ for i in range(len(elements)):
 print('navigating to: ' + links[0])
 driver.get(links[0])
 
+# Wait for 5 seconds
+time.sleep(5)
+
 # Remove from bookmark
-remove_bookmark_button = driver.find_element_by_xpath('//section//button[@aria-label="Remove Bookmark"]')
-remove_bookmark_button.click()
+bookmark_button = driver.find_element_by_xpath('//section//button[@aria-controls="addToCatalogBookmarkButton"]')
+bookmark_button.click()
+
+# Wait for 3 seconds
+time.sleep(3)
+
+reading_list_checkbox = driver.find_element_by_xpath('//p[contains(text(),"Reading list")]')
+reading_list_checkbox.click()
 
 # Get all contents of the article
 all_contents = driver.find_element_by_xpath("//article").text
